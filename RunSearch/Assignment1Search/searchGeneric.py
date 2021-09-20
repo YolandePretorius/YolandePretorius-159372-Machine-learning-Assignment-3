@@ -8,7 +8,7 @@
 # Attribution-NonCommercial-ShareAlike 4.0 International License.
 # See: http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en
 
-from display import Displayable, visualize
+from Assignment1Search.display import Displayable,visualize
 
 class Searcher(Displayable):
     """returns a searcher for a problem.
@@ -41,7 +41,7 @@ class Searcher(Displayable):
         """
         while not self.empty_frontier():
             path = self.frontier.pop()
-            self.display(2, "Expanding:",path,"(cost:",path.cost,")")
+            self.display(0, "Expanding:",path,"(cost:",path.cost,")")
             self.num_expanded += 1
             if self.problem.is_goal(path.end()):    # solution found
                 self.display(1, self.num_expanded, "paths have been expanded and",
@@ -58,7 +58,7 @@ class Searcher(Displayable):
                      self.num_expanded,"paths expanded.")
 
 import heapq        # part of the Python standard library
-from searchProblem import Path
+from Assignment1Search.searchProblem import Path
 
 class FrontierPQ(object):
     """A frontier consists of a priority queue (heap), frontierpq, of
@@ -127,22 +127,22 @@ class AStarSearcher(Searcher):
         value = path.cost+self.problem.heuristic(path.end())
         self.frontier.add(path, value)
 
-import searchProblem as searchProblem
+import Assignment1Search.searchProblem as searchProblem
 
 
-def test(SearchClass, problem=searchProblem.problem1, solutions=[['g','d','b','c','a']] ):
-    """Unit test for aipython searching algorithms.
-    SearchClass is a class that takes a problemm and implements search()
-    problem is a search problem
-    solutions is a list of optimal solutions 
-    """
-    print("Testing problem 1:")
-    schr1 = SearchClass(problem)
-    path1 = schr1.search()
-    print("Path found:",path1)
-    assert path1 is not None, "No path is found in problem1"
-    assert list(path1.nodes()) in solutions, "Shortest path not found in problem1"
-    print("Passed unit test")
+# def test(SearchClass, problem=searchProblem.problem1, solutions=[['g','d','b','c','a']] ):
+#     """Unit test for aipython searching algorithms.
+#     SearchClass is a class that takes a problemm and implements search()
+#     problem is a search problem
+#     solutions is a list of optimal solutions 
+#     """
+#     print("Testing problem 1:")
+#     schr1 = SearchClass(problem)
+#     path1 = schr1.search()
+#     print("Path found:",path1)
+#     assert path1 is not None, "No path is found in problem1"
+#     assert list(path1.nodes()) in solutions, "Shortest path not found in problem1"
+#     print("Passed unit test")
 
 def ReadFromFile(fileName):
     f = open(fileName, "r")
@@ -153,14 +153,15 @@ def ReadFromFile(fileName):
     # test(Searcher)
     # test(AStarSearcher)
    
-   
-# fileData =ReadFromFile("..\SCMP1\starting_locations.loc")
-# #fileData =ReadFromFile("..\SCMP1\mazes\M0_1.mz")
-# print(fileData)   
-# example queries:
-searcher1 = Searcher(searchProblem.acyclic_delivery_problem)   # DFS
-searcher1.search()  # find first path
-searcher1.search()  # find next path
+
+import Assignment1Search.createMaize as createM
+
+searchProblemMaize = createM.runSearchProblem()
+searcher1 = Searcher(searchProblemMaize)
+searcher1.search()
+# searcher1 = Searcher(searchProblem.acyclic_delivery_problem)   # DFS
+# searcher1.search()  # find first path
+# searcher1.search()  # find next path
 # searcher2 = AStarSearcher(searchProblem.acyclic_delivery_problem)   # A*
 # searcher2.search()  # find first path
 # searcher2.search()  # find next path

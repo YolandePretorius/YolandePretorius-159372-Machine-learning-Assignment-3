@@ -4,10 +4,14 @@ Created on 18/09/2021
 @author: yolan
 '''
 import numpy as np
+import Assignment1Search.searchProblem as SP
 
 startNodesList = []
 listOfNodes =[]
 listOfGoals =[]
+ArchListnonCyclic = []
+# ArcInverseList = []
+ArchListStr =[]
 
 
 if __name__ == '__main__':
@@ -38,25 +42,71 @@ def getMaize(MaizeData):
     newArray = maizeArray.reshape(heightY,widthX)
     print("Maize data",newArray)
     return(newArray,widthX,heightY)
-
-def getNeighbourBinaryValues(x,y,maizeMatrix,nodeValue,xWidth,yHeight):
-    if ((x >= 0) and (x<xWidth)) and ((y>=0) and (y < yHeight)):
-        nodeValue = int(maizeMatrix[x][y])
-        nodeBinaryValue = bin(nodeValue)
-        return nodeBinaryValue
+'''
+Get binary number of the neighbor to see structure of node
+Use binary number to determine if the node can form an arch. if there is a wall no arch will form 
+'''
+def getNeighbourBin(x,y,maizeMatrix,xWidth,yHeight):
+    if ((x >= 0) and (x<xWidth)) and ((y>=0) and (y <yHeight)):
+        nodeValueNeighbour = int(maizeMatrix[x][y])    
+        nodeBinaryList = [int(i) for i in np.binary_repr(nodeValueNeighbour, 5)]
+        return nodeBinaryList
     else:
         return None
+ 
+def ArchTrueFalse(binNumCurent,binNumNeigh):
+    if(binNumCurent or binNumNeigh):
+        return False
+    else: 
+        return True
+'''
+create a acyclic  search solution by creating a list containing strings of all the acrhs and anti archs
+If node arch and anti arch is not in the arch list then add 
+'''
+    
+def AddToArchList(x,y,xdir,ydir,direction):
+    if(direction == True):
+        currentNodeName = createNodeName(x,y) 
+        neighborNodeName = createNodeName(xdir,ydir)
+        print(currentNodeName)
+        print(neighborNodeName)
+        archedPoints = SP.Arc(currentNodeName,neighborNodeName)
+        antiArchedPoint = SP.Arc(neighborNodeName,currentNodeName)
+        archPointStr = str(archedPoints)
+        antiArchPointStr = str(antiArchedPoint)
+        if(archPointStr not in ArchListStr) and (antiArchPointStr not in ArchListStr) :
+            ArchListStr.append(archPointStr) # create a list of the different acrched nodes
+            ArchListStr.append(antiArchPointStr)
+            ArchListnonCyclic.append(archedPoints)
+            print(ArchListnonCyclic)
         
-
+        
+ 
+def createArchList(x,y,currentNodeBinaryList,neighbourBinValueDown,neighbourBinValueUp,neighbourBinValueLeft,neighbourBinValueRight):
+   if(neighbourBinValueDown!= None):
+        Down = ArchTrueFalse(currentNodeBinaryList[2],neighbourBinValueDown[4])
+        AddToArchList(x,y,x+1,y,Down)
+   if(neighbourBinValueUp != None):
+        up   = ArchTrueFalse(currentNodeBinaryList[4],neighbourBinValueUp[2])
+        AddToArchList(x,y,x-1,y,up)
+   if(neighbourBinValueLeft != None):
+        left = ArchTrueFalse(currentNodeBinaryList[1],neighbourBinValueLeft[3])
+        AddToArchList(x,y,x,y-1,left)
+   if(neighbourBinValueRight != None):  
+        right = ArchTrueFalse(currentNodeBinaryList[3],neighbourBinValueRight[1])
+        AddToArchList(x,y,x,y+1,right)  
+   
 '''
 Check if current node can arch with neighbour nodes through binary values.
-
 '''
 def checkNeighboursArch(x,y,maizeMatrix,nodeValue,xWidth,yHeight):
-    nodeBinaryValue = bin(nodeValue)
-    neighbourBinValue = getNeighbourBinaryValues(x+1,y,maizeMatrix,nodeValue,xWidth,yHeight)
-    
-        
+    currentNodeBinaryList = [int(i) for i in np.binary_repr(nodeValue, 5)]
+    neighbourBinValueDown = getNeighbourBin(x+1,y,maizeMatrix,xWidth,yHeight)
+    neighbourBinValueUp = getNeighbourBin(x-1,y,maizeMatrix,xWidth,yHeight)
+    neighbourBinValueLeft = getNeighbourBin(x,y-1,maizeMatrix,xWidth,yHeight)
+    neighbourBinValueRight = getNeighbourBin(x,y+1,maizeMatrix,xWidth,yHeight)
+    createArchList(x,y,currentNodeBinaryList,neighbourBinValueDown,neighbourBinValueUp,neighbourBinValueLeft,neighbourBinValueRight)
+         
     
 
 '''
@@ -65,8 +115,8 @@ create a list of names (using row and column) for each node that will be used to
 def matrixLoopthroughcreataList(maizeMatrix,xWidth,yHeight):
     x=0
     y=0
-    for x in range(xWidth-1):
-        for y in range(yHeight-1):
+    for x in range(xWidth):
+        for y in range(yHeight):
             name = createNodeName(x,y)
             nodeValue = int(maizeMatrix[x][y])
             if(nodeValue > 15):
@@ -85,7 +135,7 @@ def loopThroughStartNodeListCreateNodeNames(startlocationArray):
         y = int(node[1])
         name = createNodeName(x, y)
         startNodesList.append(name)
-        
+  
 def createNodeName(x,y):
     x =str(x)
     y = str(y)
@@ -93,11 +143,16 @@ def createNodeName(x,y):
     return name
 
 
-    
-LocationData = readFile("SCMP1\starting_locations.loc")
-MaizeData = readFile("SCMP1\mazes\M0_1.mz")
+def runSearchProblem():    
+    # LocationData = readFile("SCMP1\starting_locations.loc")
+    LocationData = ("0,0")
+    MaizeData = readFile("SCMP1\mazes\Test.mz")
 
-startlocationArray = getlocation(LocationData)
-loopThroughStartNodeListCreateNodeNames(startlocationArray)
-maizeMatrix,Xwidth,Yheight = getMaize(MaizeData)
-matrixLoopthroughcreataList(maizeMatrix,Xwidth,Yheight)
+    # startlocationArray =getlocation(LocationData)
+    # loopThroughStartNodeListCreateNodeNames(startlocationArray)
+    maizeMatrix,Xwidth,Yheight = getMaize(MaizeData)
+    matrixLoopthroughcreataList(maizeMatrix,Xwidth,Yheight)
+
+    searchproblemNew = SP.Search_problem_from_explicit_graph(listOfNodes,ArchListnonCyclic,start =LocationData,goals=listOfGoals)
+    return searchproblemNew
+# runSearchProblem()
