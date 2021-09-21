@@ -23,6 +23,7 @@ class Searcher(Displayable):
         self.num_expanded = 0
         self.add_to_frontier(Path(problem.start_node()))
         super().__init__()
+        self.explored = set()
 
     def initialize_frontier(self):
         self.frontier = []
@@ -41,21 +42,23 @@ class Searcher(Displayable):
         """
         while not self.empty_frontier():
             path = self.frontier.pop()
-            self.display(0, "Expanding:",path,"(cost:",path.cost,")")
-            self.num_expanded += 1
-            if self.problem.is_goal(path.end()):    # solution found
-                self.display(1, self.num_expanded, "paths have been expanded and",
-                            len(self.frontier), "paths remain in the frontier")
-                self.solution = path   # store the solution found
-                return path
-            else:
-                neighs = self.problem.neighbors(path.end())
-                self.display(3,"Neighbors are", neighs)
-                for arc in reversed(list(neighs)):
-                    self.add_to_frontier(Path(path,arc))
-                self.display(3,"Frontier:",self.frontier)
-        self.display(1,"No (more) solutions. Total of",
-                     self.num_expanded,"paths expanded.")
+            if path.end() not in self.explored:
+                self.display(1, "Expanding:",path,"(cost:",path.cost,")")
+                self.explored.add(path.end())
+                self.num_expanded += 1
+                if self.problem.is_goal(path.end()):    # solution found
+                    self.display(1, self.num_expanded, "paths have been expanded and",
+                                len(self.frontier), "paths remain in the frontier")
+                    self.solution = path   # store the solution found
+                    return path
+                else:
+                    neighs = self.problem.neighbors(path.end())
+                    self.display(1,"Neighbors are", neighs)
+                    for arc in reversed(list(neighs)):
+                        self.add_to_frontier(Path(path,arc))
+                    self.display(1,"Frontier:",self.frontier)
+            self.display(1,"No (more) solutions. Total of",
+                         self.num_expanded,"paths expanded.")
 
 import heapq        # part of the Python standard library
 from Assignment1Search.searchProblem import Path
@@ -127,7 +130,7 @@ class AStarSearcher(Searcher):
         value = path.cost+self.problem.heuristic(path.end())
         self.frontier.add(path, value)
 
-import Assignment1Search.searchProblem as searchProblem
+# import Assignment1Search.searchProblem as searchProblem
 
 
 # def test(SearchClass, problem=searchProblem.problem1, solutions=[['g','d','b','c','a']] ):
@@ -144,11 +147,11 @@ import Assignment1Search.searchProblem as searchProblem
 #     assert list(path1.nodes()) in solutions, "Shortest path not found in problem1"
 #     print("Passed unit test")
 
-def ReadFromFile(fileName):
-    f = open(fileName, "r")
-    data = f.readline()
-    f.close()
-    return(data)
+# def ReadFromFile(fileName):
+#     f = open(fileName, "r")
+#     data = f.readline()
+#     f.close()
+#     return(data)
 # if __name__ == "__main__":
     # test(Searcher)
     # test(AStarSearcher)

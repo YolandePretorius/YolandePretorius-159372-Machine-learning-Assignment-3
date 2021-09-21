@@ -27,9 +27,9 @@ class SearcherMPP(AStarSearcher):
         """
         while not self.empty_frontier():
             path = self.frontier.pop()
-            if path.end() not in self.explored:
+            if path.end() not in self.explored: # check if node have been visited if not then add to the path
                 self.display(2, "Expanding:",path,"(cost:",path.cost,")")
-                self.explored.add(path.end())
+                self.explored.add(path.end()) # add to a list to check of paths explored
                 self.num_expanded += 1
                 if self.problem.is_goal(path.end()):
                     self.display(1, self.num_expanded, "paths have been expanded and",
@@ -45,9 +45,9 @@ class SearcherMPP(AStarSearcher):
         self.display(1,"No (more) solutions. Total of",
                      self.num_expanded,"paths expanded.")
 
-from Assignment1Search.searchGeneric import test
-if __name__ == "__main__":
-    test(SearcherMPP)
+# from Assignment1Search.searchGeneric import test
+# if __name__ == "__main__":
+#     test(SearcherMPP)
 
 # import Assignment1Search.searchProblem
 import Assignment1Search.createMaize as createM

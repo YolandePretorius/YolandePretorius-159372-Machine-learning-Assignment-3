@@ -60,11 +60,11 @@ def ArchTrueFalse(binNumCurent,binNumNeigh):
     else: 
         return True
 '''
-create a acyclic  search solution by creating a list containing strings of all the acrhs and anti archs
+create a acyclic  search solution by creating a list containing strings of all the archs and anti archs
 If node arch and anti arch is not in the arch list then add 
 '''
     
-def AddToArchList(x,y,xdir,ydir,direction):
+def AddToArchListACyclic(x,y,xdir,ydir,direction):
     if(direction == True):
         currentNodeName = createNodeName(x,y) 
         neighborNodeName = createNodeName(xdir,ydir)
@@ -80,27 +80,42 @@ def AddToArchList(x,y,xdir,ydir,direction):
             ArchListnonCyclic.append(archedPoints)
             print(ArchListnonCyclic)
         
-        
+def AddToArchListCyclic(x,y,xdir,ydir,direction):
+    if(direction == True):
+        currentNodeName = createNodeName(x,y) 
+        neighborNodeName = createNodeName(xdir,ydir)
+        print(currentNodeName)
+        print(neighborNodeName)
+        archedPoints = SP.Arc(currentNodeName,neighborNodeName)
+        antiArchedPoint = SP.Arc(neighborNodeName,currentNodeName)
+        archPointStr = str(archedPoints)
+        antiArchPointStr = str(antiArchedPoint)
+        if(archPointStr not in ArchListStr)and (antiArchPointStr not in ArchListStr):
+            ArchListStr.append(archPointStr) # create a list of the different acrched nodes
+            ArchListStr.append(antiArchPointStr)
+            ArchListnonCyclic.append(antiArchedPoint)
+            ArchListnonCyclic.append(archedPoints)
+            print(ArchListnonCyclic)      
  
 def createArchList(x,y,currentNodeBinaryList,neighbourBinValueDown,neighbourBinValueUp,neighbourBinValueLeft,neighbourBinValueRight):
-   if(neighbourBinValueDown!= None):
+    if(neighbourBinValueDown!= None):
         Down = ArchTrueFalse(currentNodeBinaryList[2],neighbourBinValueDown[4])
-        AddToArchList(x,y,x+1,y,Down)
-   if(neighbourBinValueUp != None):
+        AddToArchListCyclic(x,y,x+1,y,Down)
+    if(neighbourBinValueUp != None):
         up   = ArchTrueFalse(currentNodeBinaryList[4],neighbourBinValueUp[2])
-        AddToArchList(x,y,x-1,y,up)
-   if(neighbourBinValueLeft != None):
+        AddToArchListCyclic(x,y,x-1,y,up)
+    if(neighbourBinValueLeft != None):
         left = ArchTrueFalse(currentNodeBinaryList[1],neighbourBinValueLeft[3])
-        AddToArchList(x,y,x,y-1,left)
-   if(neighbourBinValueRight != None):  
+        AddToArchListCyclic(x,y,x,y-1,left)
+    if(neighbourBinValueRight != None):  
         right = ArchTrueFalse(currentNodeBinaryList[3],neighbourBinValueRight[1])
-        AddToArchList(x,y,x,y+1,right)  
+        AddToArchListCyclic(x,y,x,y+1,right)  
    
 '''
 Check if current node can arch with neighbour nodes through binary values.
 '''
 def checkNeighboursArch(x,y,maizeMatrix,nodeValue,xWidth,yHeight):
-    currentNodeBinaryList = [int(i) for i in np.binary_repr(nodeValue, 5)]
+    currentNodeBinaryList = [int(i) for i in np.binary_repr(nodeValue,5)]
     neighbourBinValueDown = getNeighbourBin(x+1,y,maizeMatrix,xWidth,yHeight)
     neighbourBinValueUp = getNeighbourBin(x-1,y,maizeMatrix,xWidth,yHeight)
     neighbourBinValueLeft = getNeighbourBin(x,y-1,maizeMatrix,xWidth,yHeight)
@@ -144,15 +159,17 @@ def createNodeName(x,y):
 
 
 def runSearchProblem():    
-    # LocationData = readFile("SCMP1\starting_locations.loc")
-    LocationData = ("0,0")
-    MaizeData = readFile("SCMP1\mazes\Test.mz")
+    LocationData = readFile("SCMP1\starting_locations.loc")
+    MaizeData = readFile("SCMP1\mazes\M0_1.mz")
+    # LocationData = ("0,0")
+    # MaizeData = readFile("SCMP1\mazes\Test2.mz")
 
-    # startlocationArray =getlocation(LocationData)
-    # loopThroughStartNodeListCreateNodeNames(startlocationArray)
+    startlocationArray =getlocation(LocationData)
+    loopThroughStartNodeListCreateNodeNames(startlocationArray)
     maizeMatrix,Xwidth,Yheight = getMaize(MaizeData)
     matrixLoopthroughcreataList(maizeMatrix,Xwidth,Yheight)
 
-    searchproblemNew = SP.Search_problem_from_explicit_graph(listOfNodes,ArchListnonCyclic,start =LocationData,goals=listOfGoals)
+    searchproblemNew = SP.Search_problem_from_explicit_graph(listOfNodes,ArchListnonCyclic,start =startNodesList[0],goals=listOfGoals)
+    # searchproblemNew = SP.Search_problem_from_explicit_graph(listOfNodes,ArchListnonCyclic,start =LocationData,goals=listOfGoals)
     return searchproblemNew
 # runSearchProblem()

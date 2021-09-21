@@ -144,23 +144,17 @@ def test(SearchClass, problem=searchProblem.problem1, solutions=[['g','d','b','c
     assert list(path1.nodes()) in solutions, "Shortest path not found in problem1"
     print("Passed unit test")
 
-def ReadFromFile(fileName):
-    f = open(fileName, "r")
-    data = f.readline()
-    f.close()
-    return(data)
+
 # if __name__ == "__main__":
     # test(Searcher)
     # test(AStarSearcher)
    
    
-# fileData =ReadFromFile("..\SCMP1\starting_locations.loc")
-# #fileData =ReadFromFile("..\SCMP1\mazes\M0_1.mz")
-# print(fileData)   
+  
 # example queries:
-searcher1 = Searcher(searchProblem.acyclic_delivery_problem)   # DFS
-searcher1.search()  # find first path
-searcher1.search()  # find next path
+# searcher1 = AStarSearcher(searchProblem.acyclic_delivery_problem)   # DFS
+# searcher1.search()  # find first path
+# searcher1.search()  # find next path
 # searcher2 = AStarSearcher(searchProblem.acyclic_delivery_problem)   # A*
 # searcher2.search()  # find first path
 # searcher2.search()  # find next path
