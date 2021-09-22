@@ -47,7 +47,7 @@ class Searcher(Displayable):
                 self.explored.add(path.end())
                 self.num_expanded += 1
                 if self.problem.is_goal(path.end()):    # solution found
-                    self.display(1, self.num_expanded, "paths have been expanded and",
+                    self.display(2, self.num_expanded, "paths have been expanded and",
                                 len(self.frontier), "paths remain in the frontier")
                     self.solution = path   # store the solution found
                     return path
@@ -56,7 +56,7 @@ class Searcher(Displayable):
                     self.display(1,"Neighbors are", neighs)
                     for arc in reversed(list(neighs)):
                         self.add_to_frontier(Path(path,arc))
-                    self.display(1,"Frontier:",self.frontier)
+                    self.display(2,"Frontier:",self.frontier)
             self.display(1,"No (more) solutions. Total of",
                          self.num_expanded,"paths expanded.")
 
@@ -118,6 +118,7 @@ class AStarSearcher(Searcher):
 
     def __init__(self, problem):
         super().__init__(problem)
+        
 
     def initialize_frontier(self):
         self.frontier = FrontierPQ()
@@ -147,11 +148,6 @@ class AStarSearcher(Searcher):
 #     assert list(path1.nodes()) in solutions, "Shortest path not found in problem1"
 #     print("Passed unit test")
 
-# def ReadFromFile(fileName):
-#     f = open(fileName, "r")
-#     data = f.readline()
-#     f.close()
-#     return(data)
 # if __name__ == "__main__":
     # test(Searcher)
     # test(AStarSearcher)
@@ -160,7 +156,7 @@ class AStarSearcher(Searcher):
 import Assignment1Search.createMaize as createM
 
 searchProblemMaize = createM.runSearchProblem()
-searcher1 = Searcher(searchProblemMaize)
+searcher1 = AStarSearcher(searchProblemMaize)
 searcher1.search()
 # searcher1 = Searcher(searchProblem.acyclic_delivery_problem)   # DFS
 # searcher1.search()  # find first path

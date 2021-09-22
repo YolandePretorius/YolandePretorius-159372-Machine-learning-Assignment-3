@@ -12,6 +12,7 @@ listOfGoals =[]
 ArchListnonCyclic = []
 # ArcInverseList = []
 ArchListStr =[]
+heuristicMap ={}
 
 
 if __name__ == '__main__':
@@ -30,7 +31,7 @@ def getlocation(LocationData):
     numberStartPoints = int(LocationData[2])
     locationArray = LocationData[3:]
     locationArray = locationArray.reshape(numberStartPoints,2)
-    print("locarion array", np.shape(locationArray))
+    # print("locarion array", np.shape(locationArray))
     
     return locationArray
 
@@ -40,7 +41,7 @@ def getMaize(MaizeData):
     connectivity = MaizeData[2]
     maizeArray = MaizeData[3:]
     newArray = maizeArray.reshape(heightY,widthX)
-    print("Maize data",newArray)
+    # print("Maize data",newArray)
     return(newArray,widthX,heightY)
 '''
 Get binary number of the neighbor to see structure of node
@@ -68,8 +69,8 @@ def AddToArchListACyclic(x,y,xdir,ydir,direction):
     if(direction == True):
         currentNodeName = createNodeName(x,y) 
         neighborNodeName = createNodeName(xdir,ydir)
-        print(currentNodeName)
-        print(neighborNodeName)
+        # print(currentNodeName)
+        # print(neighborNodeName)
         archedPoints = SP.Arc(currentNodeName,neighborNodeName)
         antiArchedPoint = SP.Arc(neighborNodeName,currentNodeName)
         archPointStr = str(archedPoints)
@@ -78,14 +79,14 @@ def AddToArchListACyclic(x,y,xdir,ydir,direction):
             ArchListStr.append(archPointStr) # create a list of the different acrched nodes
             ArchListStr.append(antiArchPointStr)
             ArchListnonCyclic.append(archedPoints)
-            print(ArchListnonCyclic)
+            # print(ArchListnonCyclic)
         
 def AddToArchListCyclic(x,y,xdir,ydir,direction):
     if(direction == True):
         currentNodeName = createNodeName(x,y) 
         neighborNodeName = createNodeName(xdir,ydir)
-        print(currentNodeName)
-        print(neighborNodeName)
+        # print(currentNodeName)
+        # print(neighborNodeName)
         archedPoints = SP.Arc(currentNodeName,neighborNodeName)
         antiArchedPoint = SP.Arc(neighborNodeName,currentNodeName)
         archPointStr = str(archedPoints)
@@ -95,7 +96,7 @@ def AddToArchListCyclic(x,y,xdir,ydir,direction):
             ArchListStr.append(antiArchPointStr)
             ArchListnonCyclic.append(antiArchedPoint)
             ArchListnonCyclic.append(archedPoints)
-            print(ArchListnonCyclic)      
+            # print(ArchListnonCyclic)      
  
 def createArchList(x,y,currentNodeBinaryList,neighbourBinValueDown,neighbourBinValueUp,neighbourBinValueLeft,neighbourBinValueRight):
     if(neighbourBinValueDown!= None):
@@ -157,6 +158,34 @@ def createNodeName(x,y):
     name = (x+","+y)
     return name
 
+def calculateHeursticDistance(node,x,y,goalX,goalY):
+    dx = abs(x - goalX)
+    dy = abs(y - goalY)
+    D = 1 # cost for moving one space between nodes
+    cost = D*(dx + dy)
+    heuristicMap[node] = cost
+    print(heuristicMap)
+    
+    
+    
+'''
+ Used the website below to determine what the heuristc function should look like
+ http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
+ using manhattnan distace where on a node allows 4  directional movement
+'''   
+def heuristic(goal):
+    for node in listOfNodes:
+        nodeXY = node.split(",")
+        goalXY = goal.split(",")
+        x =  int(nodeXY[0])
+        y = int(nodeXY[1])
+        goalX = int(goalXY[0])
+        goalY = int(goalXY[1])
+        calculateHeursticDistance(node,x,y,goalX,goalY)
+        
+#     dx = abs(node.x - goal.x)
+#     dy = abs(node.y - goal.y)
+#     return D * (dx + dy)
 
 def runSearchProblem():    
     LocationData = readFile("SCMP1\starting_locations.loc")
@@ -168,8 +197,8 @@ def runSearchProblem():
     loopThroughStartNodeListCreateNodeNames(startlocationArray)
     maizeMatrix,Xwidth,Yheight = getMaize(MaizeData)
     matrixLoopthroughcreataList(maizeMatrix,Xwidth,Yheight)
-
-    searchproblemNew = SP.Search_problem_from_explicit_graph(listOfNodes,ArchListnonCyclic,start =startNodesList[0],goals=listOfGoals)
+    heuristic(listOfGoals[0])
+    searchproblemNew = SP.Search_problem_from_explicit_graph(listOfNodes,ArchListnonCyclic,start =startNodesList[0],goals=listOfGoals,hmap=heuristicMap)
     # searchproblemNew = SP.Search_problem_from_explicit_graph(listOfNodes,ArchListnonCyclic,start =LocationData,goals=listOfGoals)
     return searchproblemNew
 # runSearchProblem()
