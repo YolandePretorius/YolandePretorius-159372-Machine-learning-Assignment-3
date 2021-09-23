@@ -181,8 +181,8 @@ import Assignment1Search.createMaze as createM
 import time
 start_time = time.perf_counter()
 
-# computeDFS() 
-computeA()
+computeDFS() 
+# computeA()
 
 end_time = time.perf_counter()
 print("Time:", end_time - start_time, "seconds")
