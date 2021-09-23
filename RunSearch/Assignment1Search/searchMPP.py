@@ -50,7 +50,7 @@ class SearcherMPP(AStarSearcher):
 #     test(SearcherMPP)
 
 # import Assignment1Search.searchProblem
-import Assignment1Search.createMaize as createM
+import Assignment1Search.createMaze as createM
 
 searchProblemMaize = createM.runSearchProblem()
 searcher1 = SearcherMPP(searchProblemMaize)

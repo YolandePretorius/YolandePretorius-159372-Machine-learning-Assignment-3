@@ -46,7 +46,7 @@ class DF_branch_and_bound(Searcher):
                     self.display(3,"Neighbors are", neighs)
                     for arc in reversed(list(neighs)):
                         self.add_to_frontier(Path(path, arc))
-        self.display(1,"Number of paths expanded:",self.num_expanded,
+        self.display(0,"Number of paths expanded:",self.num_expanded,
                          "(optimal" if self.best_path else "(no", "solution found)")
         self.solution = self.best_path
         return self.best_path
@@ -57,7 +57,7 @@ class DF_branch_and_bound(Searcher):
 
 # Example queries:
 
-import Assignment1Search.createMaize as createM
+import Assignment1Search.createMaze as createM
 searchProblemMaize = createM.runSearchProblem()
 searcherb1 = DF_branch_and_bound(searchProblemMaize)
 # searcherb1 = DF_branch_and_bound(searchProblem.acyclic_delivery_problem)

@@ -42,18 +42,19 @@ class Searcher(Displayable):
         """
         while not self.empty_frontier():
             path = self.frontier.pop()
-            if path.end() not in self.explored:
+            if path.end() not in self.explored: # extra code added to check if node has been visited
                 self.display(1, "Expanding:",path,"(cost:",path.cost,")")
-                self.explored.add(path.end())
+                self.explored.add(path.end()) # extra code added, store visited nodes in a list 
                 self.num_expanded += 1
                 if self.problem.is_goal(path.end()):    # solution found
-                    self.display(2, self.num_expanded, "paths have been expanded and",
+                    self.display(1, self.num_expanded, "paths have been expanded and",
                                 len(self.frontier), "paths remain in the frontier")
+                    self.display(0,"############################ FINAL PATH TO GOAL==================================>>>>",path)
                     self.solution = path   # store the solution found
                     return path
                 else:
                     neighs = self.problem.neighbors(path.end())
-                    self.display(1,"Neighbors are", neighs)
+                    self.display(2,"Neighbors are", neighs)
                     for arc in reversed(list(neighs)):
                         self.add_to_frontier(Path(path,arc))
                     self.display(2,"Frontier:",self.frontier)
@@ -130,6 +131,25 @@ class AStarSearcher(Searcher):
         """add path to the frontier with the appropriate cost"""
         value = path.cost+self.problem.heuristic(path.end())
         self.frontier.add(path, value)
+        
+'''
+A* algorithm
+
+'''
+def computeA():
+    searchProblemMaize = createM.runSearchProblem()  # A*
+    searcher1 = AStarSearcher(searchProblemMaize)
+    searcher1.search()# first path
+
+'''
+DFS algorithm
+
+'''
+def computeDFS():
+    searchProblemMaize = createM.runSearchProblem()  # DFS
+    searcher1 = Searcher(searchProblemMaize)
+    searcher1.search()
+
 
 # import Assignment1Search.searchProblem as searchProblem
 
@@ -152,20 +172,21 @@ class AStarSearcher(Searcher):
     # test(Searcher)
     # test(AStarSearcher)
    
+'''
+=============================================================main ===============================================================
+uncomment the search you want to run
+'''
+import Assignment1Search.createMaze as createM
 
-import Assignment1Search.createMaize as createM
+import time
+start_time = time.perf_counter()
 
-searchProblemMaize = createM.runSearchProblem()
-searcher1 = AStarSearcher(searchProblemMaize)
-searcher1.search()
-# searcher1 = Searcher(searchProblem.acyclic_delivery_problem)   # DFS
-# searcher1.search()  # find first path
-# searcher1.search()  # find next path
-# searcher2 = AStarSearcher(searchProblem.acyclic_delivery_problem)   # A*
-# searcher2.search()  # find first path
-# searcher2.search()  # find next path
-# searcher3 = Searcher(searchProblem.cyclic_delivery_problem)   # DFS
-# searcher3.search()  # find first path with DFS. What do you expect to happen?
-# searcher4 = AStarSearcher(searchProblem.cyclic_delivery_problem)    # A*
-# searcher4.search()  # find first path
+# computeDFS() 
+computeA()
+
+end_time = time.perf_counter()
+print("Time:", end_time - start_time, "seconds")
+
+print("-----------------------------------------------------------End--------------------------------------------------------------------")
+
 
